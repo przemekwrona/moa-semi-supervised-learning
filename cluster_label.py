@@ -4,7 +4,7 @@ import pandas as pd
 from pathlib import Path
 
 plt.close("all")
-Path("analize").mkdir(parents=True, exist_ok=True)
+Path("analyze").mkdir(parents=True, exist_ok=True)
 
 cluster_label_results = [
     'results/led_results_cluster_label_95.csv',
@@ -62,4 +62,4 @@ cluster_label = pd.DataFrame(
     index=['LED', 'RBF', 'RT', 'Electricity', 'Cover Type', 'Airlines'])
 
 cluster_label.plot.bar(rot=0)
-plt.savefig('analize/cluster_and_label.png')
+plt.savefig('analyze/cluster_and_label.png')

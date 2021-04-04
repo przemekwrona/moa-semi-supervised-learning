@@ -1,0 +1,71 @@
+\documentclass[twocolumn]{report}
+\usepackage{graphicx}
+\graphicspath{ {../analyze/} }
+\usepackage{array,booktabs,csvsimple,longtable,tabularx}
+
+
+
+\begin{document}
+
+    \begin{center}
+        \begin{figure}
+            \includegraphics[width=\linewidth]{cluster_and_label.png}
+            \caption{Accuracy score (\%) of three models on all datasets with 95\% of unlabeled data}
+            \label{fig:cluster_and_label}
+        \end{figure}
+    \end{center}
+
+    \begin{itemize}
+        \item BDF:
+        \item BDA:
+        \item BPF:
+        \item BPA:
+        \item IPF:
+        \item IPF:
+        \item IPA:
+        \item IDW:
+        \item IEW:
+    \end{itemize}
+
+    \begin{center}
+        \begin{table}
+            \footnotesize
+            \begin{tabular}{|c|c|c|c|c|c|c|}
+                \hline
+                & LED  & RBF  & RT  & Elec        & Cover  & Air        \\
+                \hline
+
+                \csvreader[
+                    table head=\hline,
+                    late after line=\\\hline
+                ]{../analyze/self_training_accuracy.csv}%
+                {1=\data,2=\LED,3=\RBF,4=\RT,5=\Electrical,6=\Cover,7=\Airlines}%
+                {\data & \LED & \RBF & \RT & \Electrical & \Cover & \Airlines}
+            \end{tabular}
+            \caption{\label{tab:self_training_accuracy} Performance in terms of Accuracy score(\%)}
+        \end{table}
+    \end{center}
+
+    \begin{center}
+        \begin{table}
+            \footnotesize
+            \begin{tabular}{|c|c|c|c|c|c|c|}
+                \hline
+                & LED  & RBF  & RT  & Elec        & Cover  & Air        \\
+                \hline
+
+                \csvreader[
+                    table head=\hline,
+                    late after line=\\\hline
+                ]{../analyze/self_training_kappa.csv}%
+                {1=\data,2=\LED,3=\RBF,4=\RT,5=\Electrical,6=\Cover,7=\Airlines}%
+                {\data & \LED & \RBF & \RT & \Electrical & \Cover & \Airlines}
+            \end{tabular}
+            \caption{\label{tab:self_training_kappa} Performance in terms of Kappa score(\%)}
+        \end{table}
+    \end{center}
+
+    \listoffigures
+    \listoftables
+
+\end{document}

@@ -1,2 +1,10 @@
 results/**
-analize/**
+analyze/**
+
+publication/*.aux
+publication/*.log
+publication/*.pdf
+publication/*.synctex.gz
+publication/*.lof
+publication/*.synctex(busy)
+publication/*.lot

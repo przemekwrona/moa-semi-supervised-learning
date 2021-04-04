@@ -4,7 +4,7 @@ import pandas as pd
 from pathlib import Path
 
 plt.close("all")
-Path("analize").mkdir(parents=True, exist_ok=True)
+Path("analyze").mkdir(parents=True, exist_ok=True)
 
 self_training_bdf_results = [
     'results/led_results_self_training_bdf_95.csv',
@@ -142,7 +142,7 @@ self_training_accuracy = pd.DataFrame(
     },
     index=['LED', 'RBF', 'RT', 'Electricity', 'Cover Type', 'Airlines'])
 
-self_training_accuracy.T.to_csv('./analize/self_training_accuracy.csv')
+self_training_accuracy.T.to_csv('./analyze/self_training_accuracy.csv')
 
 self_training_kappa = pd.DataFrame(
     data={
@@ -157,4 +157,4 @@ self_training_kappa = pd.DataFrame(
     },
     index=['LED', 'RBF', 'RT', 'Electricity', 'Cover Type', 'Airlines'])
 
-self_training_kappa.T.to_csv('./analize/self_training_kappa.csv')
+self_training_kappa.T.to_csv('./analyze/self_training_kappa.csv')
