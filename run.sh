@@ -6,7 +6,7 @@ RESULTS_PATH=$PROJECT_PATH/results
 
 IS_CLUSTER_AND_LABEL=false
 IS_SELF_TRAINING=false
-TIME_LIMIT_IN_SECONDS=2
+TIME_LIMIT_IN_SECONDS=180
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -83,20 +83,29 @@ cluster_and_label_script(){
 
 supervised() {
   ### SUPERVISED ###
+  #LED
+  java -cp moa-release-2021.03.0/lib/moa.jar -javaagent:moa-release-2021.03.0/lib/sizeofag-1.0.4.jar moa.DoTask \
+  "EvaluateInterleavedTestThenTrain -l trees.HoeffdingTree -s generators.LEDGenerator -f 1000 -q 1000 -i -1 -t $TIME_LIMIT_IN_SECONDS -f 1000 -q 1000 -d $RESULTS_PATH/led_results_supervised.csv"
+
+  #RBF
+  java -cp moa-release-2021.03.0/lib/moa.jar -javaagent:moa-release-2021.03.0/lib/sizeofag-1.0.4.jar moa.DoTask \
+  "EvaluateInterleavedTestThenTrain -l trees.HoeffdingTree -s generators.RandomRBFGenerator -f 1000 -q 1000 -i -1 -t $TIME_LIMIT_IN_SECONDS -f 1000 -q 1000 -d $RESULTS_PATH/rbf_results_supervised.csv"
+
+  #RT
+  java -cp moa-release-2021.03.0/lib/moa.jar -javaagent:moa-release-2021.03.0/lib/sizeofag-1.0.4.jar moa.DoTask \
+  "EvaluateInterleavedTestThenTrain -l trees.HoeffdingTree -s generators.RandomTreeGenerator -f 1000 -q 1000 -i -1 -t $TIME_LIMIT_IN_SECONDS -f 1000 -q 1000 -d $RESULTS_PATH/rt_results_supervised.csv"
+
   # Electricity supervised
   java -cp moa-release-2021.03.0/lib/moa.jar -javaagent:moa-release-2021.03.0/lib/sizeofag-1.0.4.jar moa.DoTask \
-  "EvaluateInterleavedTestThenTrainSemi -a -b trees.HoeffdingTree -l (semisupervised.ClusterAndLabelClassifier -c (semisupervised.ClustreamSSL -a Euclidean)) \
-  -s (SemiSupervisedStream -s (ArffFileStream -f $DATA_PATH/elecNormNew.arff) -t 0.95) -i -1 -f 1000 -q 1000 -d $RESULTS_PATH/electricity_results_supervised.csv"
+  "EvaluateInterleavedTestThenTrain -l trees.HoeffdingTree -s (ArffFileStream -f $DATA_PATH/elecNormNew.arff) -i -1 -t $TIME_LIMIT_IN_SECONDS -f 1000 -q 1000 -d $RESULTS_PATH/electricity_results_supervised.csv"
 
   # Cover Type supervised
   java -cp moa-release-2021.03.0/lib/moa.jar -javaagent:moa-release-2021.03.0/lib/sizeofag-1.0.4.jar moa.DoTask \
-  "EvaluateInterleavedTestThenTrainSemi -a -b trees.HoeffdingTree -l (semisupervised.ClusterAndLabelClassifier -c (semisupervised.ClustreamSSL -a Euclidean)) \
-  -s (SemiSupervisedStream -s (ArffFileStream -f $DATA_PATH/covtypeNorm.arff) -t 0.95) -i -1 -f 1000 -q 1000 -d $RESULTS_PATH/cover_type_results_supervised.csv"
+  "EvaluateInterleavedTestThenTrain -l trees.HoeffdingTree -s (ArffFileStream -f $DATA_PATH/covtypeNorm.arff) -i -1 -t $TIME_LIMIT_IN_SECONDS -f 1000 -q 1000 -d $RESULTS_PATH/cover_type_results_supervised.csv"
 
   # Airlines supervised
   java -cp moa-release-2021.03.0/lib/moa.jar -javaagent:moa-release-2021.03.0/lib/sizeofag-1.0.4.jar moa.DoTask \
-  "EvaluateInterleavedTestThenTrainSemi -a -b trees.HoeffdingTree -l (semisupervised.ClusterAndLabelClassifier -c (semisupervised.ClustreamSSL -a Euclidean)) \
-  -s (SemiSupervisedStream -s (ArffFileStream -f $DATA_PATH/airlines.arff) -t 0.95) -i -1 -f 1000 -q 1000 -d $RESULTS_PATH/airlines_results_supervised.csv"
+  "EvaluateInterleavedTestThenTrain -l trees.HoeffdingTree -s (ArffFileStream -f $DATA_PATH/airlines.arff) -i -1 -t $TIME_LIMIT_IN_SECONDS -f 1000 -q 1000 -d $RESULTS_PATH/airlines_results_supervised.csv"
 }
 
 function batch_training_script() {
@@ -213,10 +222,10 @@ function weighting_training_script() {
 
 
 if $IS_CLUSTER_AND_LABEL ; then
-  echo "Running cluster and label"
+	echo "Running cluster and label"
   cluster_and_label_script false
   cluster_and_label_script true
-#  supervised
+  supervised
 fi
 
 if $IS_SELF_TRAINING ; then

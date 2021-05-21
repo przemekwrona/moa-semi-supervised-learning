@@ -1,31 +1,121 @@
-\documentclass[twocolumn]{report}
+\documentclass[twocolumn]{article}
 \usepackage{graphicx}
 \graphicspath{ {../analyze/} }
 \usepackage{array,booktabs,csvsimple,longtable,tabularx}
+\usepackage{fancyhdr}
+\usepackage{lipsum}
+\usepackage{hyperref}
 
 
+\title{Semi-supervised Learning over Streaming Data using MOA}
+\author{Przemyslaw WRONA \\ Warsaw University of Technology \\ Warsaw, POLAND \\ przemyslaw.wrona.dokt@pw.edu.pl}
 
 \begin{document}
+
+    \maketitle
+
+    \section*{Introduction}
+
+    In the real world, an increasing number of data is being produced millions of new instances of data. The increasing number of data does not correlate with the quality of these data.
+    Here I face missing labels in instances and in edge cases, less than 5{\%} of instances have to assign labels.
+    In this article, I would like to reproduce research from the publication, Semi-supervised Learning over Streaming Data using MOA" and present two approaches in semi-supervised learning.
+    First I would like to use the cluster-and-label algorithm.
+    In this approach, I build the model based on labeled data and I try improved results to predict labels for unlabelled instances.
+    In the second attitude, I assume that the model can be self-train and I would like to use a self-training algorithm.
+
+    \section*{Datasets}
+
+    During the research, I use both real and synthetic data.
+    The original data comes from sensors in the real world and is fully labeled.
+    To simulate an unlabelled stream of data I remove random labeled with predefined probability p.
+
+    If it comes to real data.
+    I used 3 well-known datasets: Electricity, Cover Type, and Airlines.
+
+    Electricity includes data that was collected from the Australian New South Wales Electricity Market.
+    In this market, prices are not fixed and are affected by the demand and supply of the market.
+    They are set every five minutes.
+    The ELEC dataset contains 45, 312 instances.
+    The class label identifies the change of the price relative to a moving average of the last 24 hours.
+
+    Cover type Dataset includes four wilderness areas located in the Roosevelt National Forest of northern Colorado.
+    The actual forest cover type for a given observation (30 x 30 meter cell) and forest cover type was predicted from cartographic variables
+    Moreover, these areas represent forests with minimal human-caused disturbances, so that existing forest cover types are more a result of ecological processes rather than forest management practices.
+
+    The airline dataset consists of a large number of records, containing flight arrival and departure details for all the commercial flights within the USA, from October 1987 to April 2008.
+    This is a large dataset with nearly 120 million records (11.5 GB memory size).
+    The dataset was cleaned and records were sorted according to the arrival/departure date (year, month, and day) and time of flight.
+    Its final size is around 116 million records and 5.76 GB of memory.
+
+    During the research, I used also 3 different streams that are synthetic datasets.
+    Synthetic streams are infinitive and I set the maximum number of instances to 100M.
+    I evaluate LED (), RBF, RT datasets.
+    LED contains one one-hot encoded attributes  (discrete attributes), RBF has only numerical attributes, RT (Random Trees) consists of both discrete and numerical attributes.
+
+    \section*{Algorithm}
+
+    During the researches, I reproduce two algorithms which are called: CluStream (Cluster-and-label) and self-training.
+
+    CluStreams approach assumes using micro-clusters.
+    Micro-cluster objects that store statistics about data in a stream instead of pure data.
+
+    Before starts the algorithm, the user defines a number of micro-clusters.
+    Due to the fact streams can be infinity algorithm works in an infinity loop.
+
+    After defining the number of micro-cluster. The algorithm starts its work.
+    In the first step, the first instance is taken from the stream and after that, it is tried to find the closest cluster.
+    If any exists the statistic in the micro-cluster are updated about the new instances.
+    If not algorithm tries to remove the oldest cluster and replace it with a new micro cluster if this is impossible algorithm merge two the closes clusters.
+    After that new cluster is added to the list of micro clusters.
+
+    In the self-training approach, the unlabeled data are used as a source of truth.
+    In this approach, the learner learns on its own predictions and tries to improve itself.
+    The self-training is presented in algorithm 2.
+    I assume that the dataset is an infinity stream.
+    The algorithm is the first step that takes the first instance.
+    After that, there is a checked condition if the instance contains the label.
+    If the instance contains a label learner M is learned.
+    If not learner M predicts the label L for unlabelled instance X and if the confidence of label L is gathered or equal to the threshold T defined by the user then label L is assigned to instance X and instance X is used to learn learner L.
+
+    \section*{Results}
+    To compare pseudo-labeling with full label data I compare 3 methods.
+    I compare Cluster-and-label with pseudo-labeling (Pseudo-label CL) to its version without (CL) and to a fully supervised Hoeffding Tree (Supervised).
+    The fully supervised learner is trained on the labeled data only and ignores all unlabeled data.
+    Figure 2 compares the accuracy score obtained with these three settings on our datasets simulated with 95% of unlabeled data.
+    Pseudo-label CL outperforms its counterpart in all cases.
+    Hence, pseudo-labeling is a good direction for improving the model while introducing very little additional cost to the algorithm.
+    However, it cannot perform better than a Hoeffding Tree trained only on labeled data, except on Cover Type. Especially, CL with pseudo-labeling largely lags behind the Hoeffding Tree in the case of LED.
+    The reason is that LED only contains one-hot encoded categorical data, therefore the distances computed in such data space may not be very meaningful and the cluster fails to 'understand' the data.
+    The Hoeffding Tree is by nature insensitive to attribute types, thus achieving good performance on this dataset.
 
     \begin{center}
         \begin{figure}
             \includegraphics[width=\linewidth]{cluster_and_label.png}
-            \caption{Accuracy score (\%) of three models on all datasets with 95\% of unlabeled data}
+            \caption{Accuracy score (\%) of three models on all datasets with 95\% of unlabelled data}
             \label{fig:cluster_and_label}
         \end{figure}
     \end{center}
 
     \begin{itemize}
-        \item BDF:
-        \item BDA:
-        \item BPF:
-        \item BPA:
-        \item IPF:
-        \item IPF:
-        \item IPA:
-        \item IDW:
-        \item IEW:
+        \item BDF: Batch training using distance-based confidence score and fixed confidence threshold;
+        \item BDA: Batch training using distance-based confidence score and adaptive confidence threshold;
+        \item BPF: Batch training using distance-based confidence scores estimated by the learner and fixed confidence threshold;
+        \item BPA: Batch training using distance-based confidence scores estimated by the learner and adaptive confidence threshold;
+        \item IPF: Incremental training using distance-based confidence scores estimated by the learner and fixed confidence threshold;
+        \item IPA: Incremental training using distance-based confidence scores estimated by the learner and adaptive confidence threshold;
+        \item IDW: Incremental training using all instances whose weight is the confidence score estimated by the learner;
+        \item IEW: Incremental training using all instances whose weight is always the same and equals 1.0;
     \end{itemize}
+
+    Table I and II respectively show the Accuracy and Kappa a score of each configuration on all the datasets averaged over all the ratios from 90 to 99 percent of unlabeled data.
+    To have an overall assessment of a configuration, I compute its average rank in the last column.
+    I see that BDF is consistently the configuration that has the highest rank for both metrics and IEW the lowest.
+    IEW getting the lowest rank confirms that it is indeed better to filter out predictions that are not very confident to self-train the learner.
+    In addition, batch training combined with distance-based confidence estimation is better than learner based.
+    In the experiment, the self trained learner is the Hoeffding Tree that does Naive Bayes to issue predictions at the leaves, producing the probability based confidence score of the predictions.
+    Hence, the confidence estimated from the distance of a prediction to the ground truth (i.e. labeled data) of one batch at a time can be more accurate than the probability incrementally learned by Naive Bayes from the beginning of the stream.
+    Overall, batch training configuration is a good option to consider.
+    Nevertheless, it is not completely superior to incremental configurations, as IPA and IDW may reach a high rank as well.
 
     \begin{center}
         \begin{table}

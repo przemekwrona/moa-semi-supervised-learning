@@ -1,4 +1,4 @@
-results/**
+#results/**
 analyze/**
 
 publication/*.aux
@@ -8,3 +8,4 @@ publication/*.synctex.gz
 publication/*.lof
 publication/*.synctex(busy)
 publication/*.lot
+publication/*.out

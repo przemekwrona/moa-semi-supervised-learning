@@ -6,28 +6,21 @@ from pathlib import Path
 plt.close("all")
 Path("analyze").mkdir(parents=True, exist_ok=True)
 
-cluster_label_results = [
-    'results/led_results_cluster_label_95.csv',
-    'results/rbf_results_cluster_label_95.csv',
-    'results/rt_results_cluster_label_95.csv',
-    'results/electricity_results_cluster_label_95.csv',
-    'results/cover_type_results_cluster_label_95.csv',
-    'results/airlines_results_cluster_label_95.csv'
-]
-cluster_pseudo_label_results = [
-    'results/led_results_cluster_pseudo_label_95.csv',
-    'results/rbf_results_cluster_pseudo_label_95.csv',
-    'results/rt_results_cluster_pseudo_label_95.csv',
-    'results/electricity_results_cluster_pseudo_label_95.csv',
-    'results/cover_type_results_cluster_pseudo_label_95.csv',
-    'results/airlines_results_cluster_pseudo_label_95.csv'
-]
 
-supervised_results = [
-    'results/electricity_results_supervised.csv',
-    'results/cover_type_results_supervised.csv',
-    'results/airlines_results_supervised.csv'
-]
+def get_results(suffix):
+    return [
+        'results/led_results_' + suffix + '.csv',
+        'results/rbf_results_' + suffix + '.csv',
+        'results/rt_results_' + suffix + '.csv',
+        'results/electricity_results_' + suffix + '.csv',
+        'results/cover_type_results_' + suffix + '.csv',
+        'results/airlines_results_' + suffix + '.csv'
+    ]
+
+
+cluster_label_results = get_results('cluster_label_95')
+cluster_pseudo_label_results = get_results('cluster_pseudo_label_95')
+supervised_results = get_results('supervised')
 
 
 def get_accuracy(path_to_result):
@@ -47,7 +40,7 @@ supervised_accuracy = []
 
 get_accuracies(cluster_label_results, cluster_label_accuracy)
 get_accuracies(cluster_pseudo_label_results, cluster_pseudo_label_accuracy)
-# get_accuracies(supervised_results, supervised_accuracy)
+get_accuracies(supervised_results, supervised_accuracy)
 
 print(cluster_pseudo_label_accuracy)
 print(cluster_label_accuracy)
@@ -56,8 +49,8 @@ print(supervised_accuracy)
 cluster_label = pd.DataFrame(
     data={
         'CL': cluster_label_accuracy,
-        'Pseudo-label CL': cluster_pseudo_label_accuracy
-        # 'Supervised': supervised_accuracy
+        'Pseudo-label CL': cluster_pseudo_label_accuracy,
+        'Supervised': supervised_accuracy
     },
     index=['LED', 'RBF', 'RT', 'Electricity', 'Cover Type', 'Airlines'])
 
